@@ -211,3 +211,86 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
+
+Crear la base de datos y la tabla:
+Primero, necesitas crear una base de datos y una tabla para almacenar los datos. Puedes hacer esto utilizando phpMyAdmin o mediante comandos SQL en la línea de comandos.
+sql
+Copy code
+CREATE DATABASE mi_base_de_datos;
+
+USE mi_base_de_datos;
+
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50),
+    email VARCHAR(50)
+);
+Código PHP para CRUD:
+Ahora, aquí tienes un ejemplo básico de cómo crear un archivo PHP para realizar las operaciones CRUD en la tabla de usuarios.
+php
+Copy code
+<?php
+// Conexión a la base de datos
+$servername = "localhost";
+$username = "usuario";
+$password = "contraseña";
+$database = "mi_base_de_datos";
+
+$conn = new mysqli($servername, $username, $password, $database);
+
+// Verificar la conexión
+if ($conn->connect_error) {
+    die("Conexión fallida: " . $conn->connect_error);
+}
+
+// Función para crear un usuario
+function crearUsuario($nombre, $email) {
+    global $conn;
+    $sql = "INSERT INTO usuarios (nombre, email) VALUES ('$nombre', '$email')";
+    if ($conn->query($sql) === TRUE) {
+        return "Usuario creado exitosamente";
+    } else {
+        return "Error al crear el usuario: " . $conn->error;
+    }
+}
+
+// Función para obtener todos los usuarios
+function obtenerUsuarios() {
+    global $conn;
+    $sql = "SELECT * FROM usuarios";
+    $result = $conn->query($sql);
+    $usuarios = [];
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $usuarios[] = $row;
+        }
+    }
+    return $usuarios;
+}
+
+// Función para actualizar un usuario
+function actualizarUsuario($id, $nombre, $email) {
+    global $conn;
+    $sql = "UPDATE usuarios SET nombre='$nombre', email='$email' WHERE id=$id";
+    if ($conn->query($sql) === TRUE) {
+        return "Usuario actualizado exitosamente";
+    } else {
+        return "Error al actualizar el usuario: " . $conn->error;
+    }
+}
+
+// Función para eliminar un usuario
+function eliminarUsuario($id) {
+    global $conn;
+    $sql = "DELETE FROM usuarios WHERE id=$id";
+    if ($conn->query($sql) === TRUE) {
+        return "Usuario eliminado exitosamente";
+    } else {
+        return "Error al eliminar el usuario: " . $conn->error;
+    }
+}
+
+// Cerrar la conexión
+$conn->close();
+?>
